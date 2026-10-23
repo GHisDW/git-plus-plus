@@ -1,0 +1,16 @@
+node_modules/
+dist/
+out/
+release/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.tsbuildinfo
+tests/.tmp/
+docs/screenshots/*.tmp.png
+playwright-report/
+test-results/
+.demo/
