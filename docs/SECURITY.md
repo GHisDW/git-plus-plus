@@ -49,7 +49,7 @@ Git++ is not certified or guaranteed secure. This document describes the control
 ## Checks actually performed
 
 - `npm run typecheck` (strict TypeScript) — passed.
-- `npm test` — 43 tests passed, including:
+- `npm test` — 44 tests passed, including:
   - IPC contract rejects invalid targets, missing confirmations and oversized payloads; asserts there is no exec/shell/spawn method.
   - Path tests for `..`, absolute POSIX/Windows paths, NUL bytes, symlink escape and Unicode/space paths.
   - Redaction tests for authenticated URLs, GitHub/OpenAI tokens, passwords and Authorization headers.
