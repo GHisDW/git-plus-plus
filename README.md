@@ -142,11 +142,13 @@ See [`docs/TESTING.md`](docs/TESTING.md) for coverage details and the harness ar
 npm run package       # Windows x64 NSIS installer (needs Windows or Wine on Linux)
 npm run package:dir   # Windows x64 unpacked folder
 npm run package:win:unpacked:cross  # cross-build unpacked Windows app without rcedit/signing
+npm run package:win:zip:cross       # cross-build a Windows x64 ZIP distributable
 ```
 
 In the Linux build environment used for this delivery:
 
 - `electron-builder --win --x64 --dir -c.win.signAndEditExecutable=false` **succeeded**, producing `release/win-unpacked/Git++.exe` and `resources/app.asar`.
+- `electron-builder --win zip --x64 -c.win.signAndEditExecutable=false` **succeeded**, producing `release/GitPlusPlus-1.0.0-x64.zip` (21 MB) as a distributable Windows x64 build.
 - The NSIS installer target **did not complete** because `wine` is unavailable. The partial installer was deleted rather than presented as usable.
 - No code-signing certificate is configured. A public release should be signed and built on Windows (or a Wine-enabled CI runner) for executable metadata, icon resources and installer signing.
 

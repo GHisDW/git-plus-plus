@@ -22,7 +22,7 @@ win:
       arch:
         - x64
   icon: build/icon.png
-  artifactName: GitPlusPlus-Setup-${version}.${ext}
+  artifactName: GitPlusPlus-${version}-${arch}.${ext}
   requestedExecutionLevel: asInvoker
 
 nsis:

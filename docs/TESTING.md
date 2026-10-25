@@ -18,6 +18,7 @@ Results from the delivery environment (Linux Debian 12, Node 24.22, Git 2.39.5):
 | `npm run build` | pass (renderer + main + preload + harness) |
 | `npm run test:e2e` | 18/18 checks pass |
 | `npm run package:win:unpacked:cross` | pass (Windows x64 unpacked) |
+| `npm run package:win:zip:cross` | pass (Windows x64 ZIP, 21 MB) |
 | `npm run package` (NSIS) | blocked: wine not installed |
 
 ## Unit tests (`tests/unit`)

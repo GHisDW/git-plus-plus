@@ -22,7 +22,8 @@
     "screenshots": "node scripts/screenshots.mjs",
     "package": "npm run build && electron-builder --win --x64",
     "package:dir": "npm run build && electron-builder --win --x64 --dir",
-    "package:win:unpacked:cross": "npm run build && electron-builder --win --x64 --dir -c.win.signAndEditExecutable=false"
+    "package:win:unpacked:cross": "npm run build && electron-builder --win --x64 --dir -c.win.signAndEditExecutable=false",
+    "package:win:zip:cross": "npm run build && electron-builder --win zip --x64 -c.win.signAndEditExecutable=false"
   },
   "dependencies": {
     "dompurify": "^3.2.6",

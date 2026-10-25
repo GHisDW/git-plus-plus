@@ -8,4 +8,4 @@
 - **GitHub PR detail is summary-only.** Full reviews/comments/checks open on GitHub; list/create operations are genuine REST calls.
 - **AI is opt-in and limited to diff/commit actions.** No repository content is sent automatically.
 - **Custom title bar.** On Windows the window uses a hidden title bar with renderer-provided minimise/maximise/close controls; native overlay controls are intentionally not used.
-- **Packaging.** `electron-builder` is configured for Windows x64 NSIS and unpacked output. Cross-building the NSIS installer requires Wine; the unpacked app was produced in this environment with executable signing/resource editing disabled.
+- **Packaging.** `electron-builder` is configured for Windows x64 NSIS, ZIP and unpacked output. Cross-building the NSIS installer requires Wine, which is unavailable here. The unpacked app and a ZIP distributable were produced successfully with executable signing/resource editing disabled; the NSIS installer was not produced.
