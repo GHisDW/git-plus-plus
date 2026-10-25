@@ -84,7 +84,7 @@ async function main(): Promise<void> {
 
   if (demoRepo) {
     try {
-      await api.git.open(demoRepo);
+      await api.invoke('git.open', { path: demoRepo });
       const diffMode = process.env.GITPP_HARNESS_DIFF;
       if (diffMode === 'split') await api.settings.update({ diff: { mode: 'split' } });
       if (process.env.GITPP_HARNESS_THEME) await api.settings.update({ theme: process.env.GITPP_HARNESS_THEME as 'dark' | 'light' });

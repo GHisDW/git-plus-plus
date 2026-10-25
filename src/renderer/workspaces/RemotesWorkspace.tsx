@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  AlertTriangle, ArrowDown, ArrowUp, CloudDownload, CloudUpload, Link2, Pencil, Plus, RefreshCw, Trash2, Wifi, Terminal,
+  ArrowDown, ArrowUp, CloudDownload, CloudUpload, Link2, Pencil, Plus, RefreshCw, Trash2, Wifi,
 } from 'lucide-react';
-import type { RemoteInfo, RemoteOpResult } from '../../shared/types';
+import type { RemoteInfo } from '../../shared/types';
 import { call, errorDetail, errorMessage } from '../lib/api';
 import { useApp } from '../state/AppState';
-import { cx } from '../lib/utils';
 import { ConfirmDialog, EmptyState, Field, Modal, Spinner } from '../components/ui';
 
 export function RemotesWorkspace(): React.JSX.Element {
@@ -19,7 +18,6 @@ export function RemotesWorkspace(): React.JSX.Element {
   const [url, setUrl] = useState('');
   const [output, setOutput] = useState<{ title: string; body: string } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [gitOutput, setGitOutput] = useState('');
 
   const load = async (silent = false) => {
     if (!repoPath) return;
@@ -64,7 +62,6 @@ export function RemotesWorkspace(): React.JSX.Element {
     if (!snapshot) return;
     const label = kind === 'fetch' ? 'Fetching…' : kind === 'pull' ? 'Pulling…' : force ? 'Force-pushing with lease…' : 'Pushing…';
     setBusy(label);
-    setGitOutput('');
     try {
       const result = kind === 'fetch'
         ? await call('git.fetch', { repoPath, ...(remote ? { remote: remote.name } : {}) })
@@ -219,7 +216,6 @@ export function RemotesWorkspace(): React.JSX.Element {
           <pre className="run-output" style={{ maxHeight: '50vh' }}>{output.body}</pre>
         </Modal>
       ) : null}
-      <div style={{ display: 'none' }}><Terminal size={1} /><AlertTriangle size={1} /></div>
     </div>
   );
 }

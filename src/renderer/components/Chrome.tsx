@@ -147,7 +147,7 @@ export function Sidebar(): React.JSX.Element {
       {snapshot ? (
         <div className="sidebar-footer">
           <button className="sidebar-foot-button" onClick={() => void refresh()} disabled={Boolean(busyLabel)}>
-            <RefreshCw size={13} className={cx(busyLabel === 'Refreshing…' && 'spinner')} /> Refresh status
+            <RefreshCw size={13} /> Refresh status
           </button>
           <button className="sidebar-foot-button" onClick={() => void openRepository()}>
             <FolderGit2 size={13} /> Switch repository

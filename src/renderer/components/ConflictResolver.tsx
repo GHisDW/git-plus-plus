@@ -164,15 +164,15 @@ export function ConflictResolver({ snapshot, onUpdated }: { snapshot: RepoSnapsh
                   <div className="spacer" />
                   {markers > 0 ? <span className="tag red"><AlertTriangle size={10} />{markers} markers</span> : <span className="tag green"><Check size={10} />no markers</span>}
                   <button className="btn sm" onClick={() => void load()}><RotateCcw size={11} /> Reload</button>
-                  <button className="btn sm" onClick={() => void save()} disabled={saving || !dirty} title="Save the working file without marking it resolved">
+                  <button className="btn sm" onClick={() => void save()} disabled={saving || !dirty || current.binary} title={current.binary ? 'Binary conflicts cannot be edited as text' : 'Save the working file without marking it resolved'}>
                     {saving ? <Spinner /> : <Save size={11} />} Save file
                   </button>
                   <button className="btn sm primary" onClick={() => void markResolved()}><Check size={11} /> Mark resolved</button>
                 </div>
                 <div className="conflict-editor" style={{ maxHeight: '45%' }}>
                   <ConflictPane title="Base (common ancestor)" content={current.base} onUse={null} />
-                  <ConflictPane title="Current (ours)" content={current.ours} onUse={() => setDraft(current.ours ?? '')} tone="var(--accent)" />
-                  <ConflictPane title="Incoming (theirs)" content={current.theirs} onUse={() => setDraft(current.theirs ?? '')} tone="var(--purple)" />
+                  <ConflictPane title="Current (ours)" content={current.ours} onUse={current.binary ? null : () => setDraft(current.ours ?? '')} tone="var(--accent)" />
+                  <ConflictPane title="Incoming (theirs)" content={current.theirs} onUse={current.binary ? null : () => setDraft(current.theirs ?? '')} tone="var(--purple)" />
                 </div>
                 <div className="conflict-result">
                   <div className="diff-toolbar" style={{ borderTop: 'none' }}>
@@ -185,6 +185,7 @@ export function ConflictResolver({ snapshot, onUpdated }: { snapshot: RepoSnapsh
                     value={draft}
                     onChange={(event) => setDraft(event.target.value)}
                     spellCheck={false}
+                    readOnly={current.binary}
                     aria-label="Resolved file content"
                     placeholder={current.binary ? 'Binary file. Use one side above, then mark resolved if appropriate.' : ''}
                   />

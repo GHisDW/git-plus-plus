@@ -119,6 +119,13 @@ export class SettingsStore {
     if (!parsed.success) {
       throw new GitError(ERR.validation(`Invalid setting: ${parsed.error.issues[0]?.path.join('.') ?? 'unknown'} — ${parsed.error.issues[0]?.message ?? 'invalid value'}`));
     }
+    if (parsed.data.github.apiBase) {
+      const url = parsed.data.github.apiBase;
+      const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/.test(url);
+      if (!/^https:\/\//.test(url) && !isLocal) {
+        throw new GitError(ERR.validation('The GitHub API base URL must use HTTPS (HTTP is allowed only for localhost).'));
+      }
+    }
     if (parsed.data.ai.baseUrl) {
       const url = parsed.data.ai.baseUrl;
       const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/.test(url);

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import {
-  AlertTriangle, Check, ChevronDown, Eye, FileCode2, FilePlus2, FolderOpen, Pencil, RefreshCw, Save,
+  AlertTriangle, Check, ChevronDown, Eye, FileCode2, FilePlus2, RefreshCw, Save,
   Search, SplitSquareHorizontal, SquarePen, WrapText,
 } from 'lucide-react';
 import type { RepoFile, TextFile } from '../../shared/types';
@@ -31,7 +31,6 @@ export function MarkdownWorkspace(): React.JSX.Element {
   const [modifiedAt, setModifiedAt] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>('split');
   const [saving, setSaving] = useState(false);
-  const [loadingFile, setLoadingFile] = useState(false);
   const [externalChanged, setExternalChanged] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
   const [newPath, setNewPath] = useState('docs/notes.md');
@@ -58,7 +57,6 @@ export function MarkdownWorkspace(): React.JSX.Element {
 
   const openFile = useCallback(async (target: string, force = false) => {
     if (!force && dirty && !window.confirm('Discard unsaved changes in the current document?')) return;
-    setLoadingFile(true);
     try {
       const file = await call('files.readText', { repoPath, path: target });
       setPath(file.path);
@@ -70,8 +68,6 @@ export function MarkdownWorkspace(): React.JSX.Element {
       setSearch('');
     } catch (error) {
       toast('error', 'Could not open the file', errorDetail(error) ?? errorMessage(error));
-    } finally {
-      setLoadingFile(false);
     }
   }, [repoPath, dirty, toast]);
 
@@ -318,7 +314,6 @@ export function MarkdownWorkspace(): React.JSX.Element {
           <div className="banner danger"><AlertTriangle size={15} /> Saving now replaces the file on disk with the editor contents. The external change is lost unless it was committed or saved elsewhere.</div>
         </Modal>
       ) : null}
-      <div style={{ display: 'none' }}><FolderOpen size={1} /><Pencil size={1} /></div>
     </div>
   );
 }

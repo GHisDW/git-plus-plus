@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  AlertTriangle, Check, CheckCircle2, ChevronRight, Circle, CloudUpload, Copy, Download, ExternalLink,
-  Globe, PackageOpen, Plus, RefreshCw, Rocket, ShieldCheck, Tag, XCircle,
+  CheckCircle2, ChevronRight, Download, RefreshCw, Rocket, ShieldCheck, Tag, XCircle,
 } from 'lucide-react';
 import type { CommitSummary, GithubStatus, PreflightRun, RemoteInfo, TagInfo } from '../../shared/types';
 import { call, errorDetail, errorMessage } from '../lib/api';
 import { useApp } from '../state/AppState';
-import { cx, plural } from '../lib/utils';
+import { plural } from '../lib/utils';
 import { formatDateTime, relativeTime } from '../../shared/format';
-import { ConfirmDialog, CopyButton, EmptyState, Field, Modal, Spinner } from '../components/ui';
+import { ConfirmDialog, CopyButton, EmptyState, Field, Spinner } from '../components/ui';
 
 function nextVersion(tags: TagInfo[]): string {
   const versions = tags
@@ -331,7 +330,6 @@ export function ReleaseWorkspace(): React.JSX.Element {
           <label className="checkbox-row"><input type="checkbox" checked={prerelease} onChange={(event) => setPrerelease(event.target.checked)} /> Mark as pre-release</label>
         </ConfirmDialog>
       ) : null}
-      <div style={{ display: 'none' }}><Globe size={1} /><PackageOpen size={1} /><Rocket size={1} /><Tag size={1} /><Copy size={1} /><CloudUpload size={1} /><Plus size={1} /><AlertTriangle size={1} /><Check size={1} /><Circle size={1} /></div>
     </div>
   );
 }

@@ -210,7 +210,7 @@ export function parseDiff(raw: string): DiffResult {
     }
     if (line.startsWith('Binary files ') || line === 'GIT binary patch') {
       current.binary = true;
-      current.status = current.status === 'modified' ? 'binary' : current.status;
+      current.status = 'binary';
       continue;
     }
     if (line.startsWith('--- ')) {

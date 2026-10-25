@@ -31,7 +31,6 @@ export function CommitBox({
 
   useEffect(() => {
     const focus = () => textareaRef.current?.focus();
-    window.addEventListener('gitpp:action', focus as EventListener);
     const handler = (event: Event) => {
       if ((event as CustomEvent<string>).detail === 'focus-commit') focus();
     };

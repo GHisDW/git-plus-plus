@@ -20,8 +20,9 @@
     "test:e2e": "node scripts/e2e.mjs",
     "harness": "node scripts/harness.mjs",
     "screenshots": "node scripts/screenshots.mjs",
-    "package": "pnpm build && electron-builder --win --x64",
-    "package:dir": "pnpm build && electron-builder --win --x64 --dir"
+    "package": "npm run build && electron-builder --win --x64",
+    "package:dir": "npm run build && electron-builder --win --x64 --dir",
+    "package:win:unpacked:cross": "npm run build && electron-builder --win --x64 --dir -c.win.signAndEditExecutable=false"
   },
   "dependencies": {
     "dompurify": "^3.2.6",

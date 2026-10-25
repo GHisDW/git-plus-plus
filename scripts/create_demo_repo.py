@@ -5,9 +5,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
-ROOT = Path('.demo/gitpp-demo').resolve()
-WORKTREE = Path('.demo/parallel-universe').resolve()
-shutil.rmtree(Path('.demo'), ignore_errors=True)
+ROOT = Path(os.environ.get('GITPP_DEMO_ROOT', '.demo/gitpp-demo')).resolve()
+WORKTREE = Path(os.environ.get('GITPP_DEMO_WORKTREE', str(ROOT.parent / f'{ROOT.name}-worktree'))).resolve()
+shutil.rmtree(ROOT, ignore_errors=True)
+shutil.rmtree(WORKTREE, ignore_errors=True)
 ROOT.mkdir(parents=True)
 
 ENV = {**os.environ, 'GIT_CONFIG_NOSYSTEM': '1'}

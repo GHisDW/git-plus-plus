@@ -323,6 +323,14 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
   }, [snapshot, busyLabel, refresh]);
 
   useEffect(() => {
+    if (settings.theme !== 'system') return undefined;
+    const media = window.matchMedia('(prefers-color-scheme: light)');
+    const apply = () => { document.documentElement.dataset.theme = media.matches ? 'light' : 'dark'; };
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, [settings.theme]);
+
+  useEffect(() => {
     const effective = settings.theme === 'system'
       ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
       : settings.theme;

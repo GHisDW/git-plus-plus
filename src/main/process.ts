@@ -148,7 +148,7 @@ export function runProcess(options: RunProcessOptions): Promise<ProcessResult> {
       settled = true;
       const durationMs = Date.now() - started;
       const result: ProcessResult = {
-        stdout: redact(stdoutChunks.join('')),
+        stdout: stdoutChunks.join(''),
         stderr: redact(stderrChunks.join('')),
         exitCode: child.exitCode,
         signal: child.signalCode,

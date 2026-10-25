@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AlertTriangle, ArrowDown, ArrowUp, Boxes, Check, GitBranch, GitMerge, GitPullRequestArrow, Pencil, Plus,
   RefreshCw, Search, Trash2, Undo2, Upload, Link2, ChevronRight,
@@ -28,7 +28,6 @@ export function BranchesWorkspace(): React.JSX.Element {
   const [forceDelete, setForceDelete] = useState(false);
   const [switching, setSwitching] = useState<string | null>(null);
   const [advanced, setAdvanced] = useState<{ kind: 'merge' | 'rebase'; branch: BranchInfo } | null>(null);
-  const [forcePhrase, setForcePhrase] = useState('');
 
   const load = async (silent = false) => {
     if (!repoPath) return;
@@ -113,7 +112,6 @@ export function BranchesWorkspace(): React.JSX.Element {
     });
     setModal(null);
     setForceDelete(false);
-    setForcePhrase('');
     if (result) await load(true);
   };
 
@@ -152,7 +150,7 @@ export function BranchesWorkspace(): React.JSX.Element {
       <div className="workspace-header">
         <div className="workspace-heading">
           <h1>Branches <span className="tag">{local.length} local · {remote.length} remote-tracking</span></h1>
-          <p>{current ? <>Current branch <strong>{current.name}</strong>{current.checkedOutAt ? ` (also checked out at ${current.checkedOutAt})` : ''}</> : 'Detached HEAD — no branch is checked out'}</p>
+          <p>{current ? <>Current branch <strong>{current.name}</strong>{current.checkedOutAt && current.checkedOutAt !== snapshot.info.path ? ` (also checked out at ${current.checkedOutAt})` : ''}</> : 'Detached HEAD — no branch is checked out'}</p>
         </div>
         <div className="workspace-actions">
           <button className="btn" onClick={() => void load()}><RefreshCw size={13} /> Refresh</button>
@@ -192,7 +190,7 @@ export function BranchesWorkspace(): React.JSX.Element {
                             <GitBranch size={12} style={{ color: branch.isHead ? 'var(--green)' : 'var(--text-muted)' }} />
                             <span className="mono" style={{ fontSize: 12 }}>{branch.name}</span>
                             {branch.isHead ? <span className="tag green">HEAD</span> : null}
-                            {branch.checkedOutAt && !branch.isHead ? <span className="tag amber" title={branch.checkedOutAt}>worktree</span> : null}
+                            {branch.checkedOutAt && branch.checkedOutAt !== snapshot.info.path ? <span className="tag amber" title={branch.checkedOutAt}>worktree</span> : null}
                           </div>
                         </td>
                         <td className="mono">{branch.upstream ?? <span className="dim">not set</span>}</td>
@@ -207,11 +205,11 @@ export function BranchesWorkspace(): React.JSX.Element {
                         <td className="mono">{relativeTime(branch.updatedAt)}</td>
                         <td>
                           <div className="row-actions" style={{ opacity: 1 }}>
-                            {!branch.isHead ? <button className="btn sm" onClick={() => void switchTo(branch)} disabled={Boolean(switching)} title="Switch to this branch">{switching === branch.name ? <Spinner /> : <Check size={11} />} Switch</button> : null}
-                            {!branch.isHead && !branch.isHead ? <button className="btn ghost icon" onClick={() => { setTarget(branch); setAdvanced({ kind: 'merge', branch }); }} title="Merge into current branch"><GitMerge size={12} /></button> : null}
+                            {!branch.isHead ? <button className="btn sm" onClick={() => void switchTo(branch)} disabled={Boolean(switching) || Boolean(branch.checkedOutAt && branch.checkedOutAt !== snapshot.info.path)} title={branch.checkedOutAt && branch.checkedOutAt !== snapshot.info.path ? `Checked out in ${branch.checkedOutAt}` : 'Switch to this branch'}>{switching === branch.name ? <Spinner /> : <Check size={11} />} Switch</button> : null}
+                            {!branch.isHead ? <button className="btn ghost icon" onClick={() => { setTarget(branch); setAdvanced({ kind: 'merge', branch }); }} title="Merge into current branch"><GitMerge size={12} /></button> : null}
                             <button className="btn ghost icon" onClick={() => { setTarget(branch); setName(branch.name); setModal('rename'); }} title="Rename"><Pencil size={12} /></button>
                             <button className="btn ghost icon" onClick={() => { setTarget(branch); setUpstream(branch.upstream ?? `origin/${branch.name}`); setModal('upstream'); }} title="Set upstream"><Link2 size={12} /></button>
-                            <button className="btn ghost icon" onClick={() => { setTarget(branch); setForceDelete(false); setForcePhrase(''); setModal('delete'); }} title="Delete"><Trash2 size={12} /></button>
+                            <button className="btn ghost icon" onClick={() => { setTarget(branch); setForceDelete(false); setModal('delete'); }} title="Delete"><Trash2 size={12} /></button>
                           </div>
                         </td>
                       </tr>
@@ -277,7 +275,7 @@ export function BranchesWorkspace(): React.JSX.Element {
           description="Git checks whether the branch is merged before deleting. Nothing is deleted from any remote."
           confirmLabel={forceDelete ? 'Force delete branch' : 'Delete branch'}
           danger
-          onClose={() => { setModal(null); setForceDelete(false); setForcePhrase(''); }}
+          onClose={() => { setModal(null); setForceDelete(false); }}
           onConfirm={remove}
           consequences={forceDelete ? [
             'Git runs `git branch -D`, which deletes the ref even if commits are unmerged.',
@@ -290,7 +288,7 @@ export function BranchesWorkspace(): React.JSX.Element {
           ]}
           confirmPhrase={forceDelete ? `delete ${target.name}` : undefined}
         >
-          <label className="checkbox-row"><input type="checkbox" checked={forceDelete} onChange={(event) => { setForceDelete(event.target.checked); setForcePhrase(''); }} /> Force delete (<span className="mono">-D</span>) even if unmerged</label>
+          <label className="checkbox-row"><input type="checkbox" checked={forceDelete} onChange={(event) => { setForceDelete(event.target.checked); }} /> Force delete (<span className="mono">-D</span>) even if unmerged</label>
           {target.checkedOutAt ? <div className="banner warn"><AlertTriangle size={14} /> This branch is checked out in a worktree at <span className="mono">{target.checkedOutAt}</span>. Git will refuse to delete it.</div> : null}
         </ConfirmDialog>
       ) : null}

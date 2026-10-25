@@ -2,14 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   AlertTriangle, Check, CheckCircle2, Circle, CircleSlash, Clock, Eye, Loader2, Play, Plus, RefreshCw,
-  RotateCcw, ShieldAlert, ShieldCheck, Square, Terminal, Trash2, XCircle, PauseCircle,
+  RotateCcw, ShieldAlert, ShieldCheck, Square, Trash2, XCircle, PauseCircle,
 } from 'lucide-react';
-import type { CheckResult, PreflightCheckConfig, PreflightConfig, PreflightRun } from '../../shared/types';
+import type { PreflightCheckConfig, PreflightConfig, PreflightRun } from '../../shared/types';
 import { call, errorDetail, errorMessage } from '../lib/api';
 import { useApp } from '../state/AppState';
 import { cx, plural } from '../lib/utils';
 import { formatDateTime, formatDuration, relativeTime } from '../../shared/format';
-import { ConfirmDialog, EmptyState, Field, Modal, Spinner } from '../components/ui';
+import { ConfirmDialog, EmptyState, Modal, Spinner } from '../components/ui';
 
 const STATUS_ICON: Record<string, LucideIcon> = {
   queued: Circle,
@@ -360,7 +360,6 @@ export function PreflightWorkspace(): React.JSX.Element {
           ]}
         />
       ) : null}
-      <div style={{ display: 'none' }}><Terminal size={1} /><RefreshCw size={1} /><AlertTriangle size={1} /></div>
     </div>
   );
 }

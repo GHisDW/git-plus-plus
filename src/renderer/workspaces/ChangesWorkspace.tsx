@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  AlertTriangle, CheckCheck, FileDiff, GitCommitHorizontal, Minus, Plus, RefreshCw, ShieldAlert,
-  ShieldCheck, Sparkles, Trash2, Undo2, X, ListFilter,
+  AlertTriangle, CheckCheck, FileDiff, Minus, Plus, RefreshCw, ShieldAlert,
+  ShieldCheck, Sparkles, Trash2, Undo2, ListFilter,
 } from 'lucide-react';
 import type { DiffResult, RepoSnapshot, StatusEntry } from '../../shared/types';
 import { call, errorDetail, errorMessage } from '../lib/api';
@@ -123,6 +123,8 @@ export function ChangesWorkspace(): React.JSX.Element {
     const result = await runOperation(label, () => call('git.stage', { repoPath, paths }), { success: paths.length === 1 ? 'Change staged' : `${paths.length} changes staged`, refresh: false });
     if (result) {
       applySnapshot(result);
+      const updated = result.files.find((file) => file.path === selection?.path);
+      if (selection && updated && !updated.unstaged && updated.staged) setSelection({ path: selection.path, stage: 'index' });
       await loadDiff();
     }
   };
@@ -132,6 +134,8 @@ export function ChangesWorkspace(): React.JSX.Element {
     const result = await runOperation(label, () => call('git.unstage', { repoPath, paths }), { success: paths.length === 1 ? 'Change unstaged' : `${paths.length} changes unstaged`, refresh: false });
     if (result) {
       applySnapshot(result);
+      const updated = result.files.find((file) => file.path === selection?.path);
+      if (selection && updated && updated.unstaged && !updated.staged) setSelection({ path: selection.path, stage: 'worktree' });
       await loadDiff();
     }
   };
@@ -350,7 +354,6 @@ export function ChangesWorkspace(): React.JSX.Element {
           <div className="banner warn"><AlertTriangle size={14} /> The diff was sent to {settings.ai.baseUrl} because you asked for an explanation. No repository content is sent automatically.</div>
         </Modal>
       ) : null}
-      <div style={{ display: 'none' }}><X size={1} /><GitCommitHorizontal size={1} /></div>
     </div>
   );
 }

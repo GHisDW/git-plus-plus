@@ -14,3 +14,7 @@ docs/screenshots/*.tmp.png
 playwright-report/
 test-results/
 .demo/
+
+.apt/
+.libs/
+.harness-data/

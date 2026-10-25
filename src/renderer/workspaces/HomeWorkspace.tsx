@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
   AlertTriangle, ArrowRight, ArrowUpRight, Boxes, CloudDownload, FileCode2, FolderGit2, FolderPlus,
-  GitBranch, GitCommitHorizontal, History, Pin, PinOff, RefreshCw, Rocket, ShieldCheck, Sparkles, Trash2, X,
+  GitBranch, GitCommitHorizontal, History, Pin, PinOff, RefreshCw, Rocket, ShieldCheck, Sparkles, X,
 } from 'lucide-react';
 import type { CommitSummary, PreflightRun, WorktreeInfo } from '../../shared/types';
 import { useApp } from '../state/AppState';
 import { call } from '../lib/api';
 import { relativeTime } from '../../shared/format';
 import { cx } from '../lib/utils';
-import { EmptyState, Logo, Spinner } from '../components/ui';
+import { Logo, Spinner } from '../components/ui';
 
 export function HomeWorkspace(): React.JSX.Element {
-  const { snapshot, info, recents, openRepository, initRepository, setWorkspace, refresh, pinRecent, removeRecent, openRepository: open, toast } = useApp();
+  const { snapshot, info, recents, openRepository, initRepository, setWorkspace, refresh, pinRecent, removeRecent, openRepository: open } = useApp();
   const [commits, setCommits] = useState<CommitSummary[]>([]);
   const [worktrees, setWorktrees] = useState<WorktreeInfo[]>([]);
   const [run, setRun] = useState<PreflightRun | null>(null);
@@ -24,7 +24,7 @@ export function HomeWorkspace(): React.JSX.Element {
     void (async () => {
       const repoPath = snapshot.info.path;
       const [log, trees, runs] = await Promise.all([
-        call('git.log', { repoPath, limit: 6, all: true }).catch(() => ({ commits: [], hasMore: false, headSha: null })),
+        call('git.log', { repoPath, limit: 6 }).catch(() => ({ commits: [], hasMore: false, headSha: null })),
         call('git.worktrees', { repoPath }).catch(() => []),
         call('preflight.runs', { repoPath }).catch(() => []),
       ]);
@@ -254,4 +254,3 @@ function Quick({ icon: Icon, label, onClick }: { icon: typeof ShieldCheck; label
   return <button className="quick-action" onClick={onClick}><Icon size={14} />{label}</button>;
 }
 
-void EmptyState;

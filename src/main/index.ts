@@ -96,7 +96,6 @@ function createWindow(): void {
     backgroundColor: '#0d1014',
     title: 'Git++',
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#0d1014', symbolColor: '#c8d2de', height: 38 },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

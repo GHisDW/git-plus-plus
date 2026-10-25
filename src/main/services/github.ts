@@ -35,7 +35,9 @@ export function parseGithubRemote(url: string): { owner: string; name: string } 
   const ssh = /^(?:ssh:\/\/)?git@github\.com[:/]([^/]+)\/([^/]+)$/.exec(cleaned);
   if (ssh) return { owner: ssh[1] ?? '', name: ssh[2] ?? '' };
   const enterprise = /^https?:\/\/([^/]+)\/(?!api\/)([^/]+)\/([^/]+)$/.exec(cleaned);
-  if (enterprise) return { owner: enterprise[2] ?? '', name: enterprise[3] ?? '' };
+  if (enterprise && (enterprise[1] ?? '').toLowerCase().includes('github')) {
+    return { owner: enterprise[2] ?? '', name: enterprise[3] ?? '' };
+  }
   return null;
 }
 

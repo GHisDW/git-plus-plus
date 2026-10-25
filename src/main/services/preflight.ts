@@ -30,7 +30,7 @@ export class PreflightService {
   private readonly file: string;
 
   constructor(
-    private readonly dataDir: string,
+    dataDir: string,
     private readonly git: GitService,
     private readonly settings: () => Settings,
     private readonly onProgress: (repoPath: string, runId: string) => void = () => undefined,
@@ -39,6 +39,7 @@ export class PreflightService {
   }
 
   async load(): Promise<void> {
+    await fs.mkdir(path.dirname(this.file), { recursive: true });
     try {
       const raw = JSON.parse(await fs.readFile(this.file, 'utf8')) as Record<string, PreflightConfig>;
       for (const [key, value] of Object.entries(raw)) {
@@ -189,13 +190,12 @@ export class PreflightService {
     this.runs.set(key, list.slice(0, MAX_RUNS_PER_REPO));
     this.controllers.set(run.id, controller);
 
-    void this.execute(run, config, snapshot, selected, controller);
+    void this.execute(run, snapshot, selected, controller);
     return this.publicRun(run);
   }
 
   private async execute(
     run: RunInternal,
-    config: PreflightConfig,
     snapshot: RepoSnapshot,
     checks: PreflightCheckConfig[],
     controller: AbortController,

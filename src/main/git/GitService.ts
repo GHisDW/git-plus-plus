@@ -267,6 +267,7 @@ export class GitService {
     const status = await this.rawStatus(ctx.root);
     const byPath = new Map(status.entries.map((entry) => [entry.path, entry]));
     const toRestoreWorktree: string[] = [];
+    const toRestoreFromHead: string[] = [];
     const toUnstage: string[] = [];
 
     for (const requested of entries) {
@@ -287,10 +288,14 @@ export class GitService {
         else await fs.unlink(absolute);
         continue;
       }
-      if (requested.staged) toUnstage.push(safe);
-      if (entry.unstaged || (!entry.staged && requested.staged)) toRestoreWorktree.push(safe);
+      if (requested.staged && status.head.unborn) toUnstage.push(safe);
+      else if (requested.staged) toRestoreFromHead.push(safe);
+      else if (entry.unstaged) toRestoreWorktree.push(safe);
     }
 
+    if (toRestoreFromHead.length > 0) {
+      await this.runner.run({ cwd: ctx.root, args: ['restore', '--source=HEAD', '--staged', '--worktree', '--', ...toRestoreFromHead], timeoutMs: 60_000 });
+    }
     if (toRestoreWorktree.length > 0) {
       await this.runner.run({ cwd: ctx.root, args: ['restore', '--worktree', '--', ...toRestoreWorktree], timeoutMs: 60_000 });
     }
@@ -483,7 +488,7 @@ export class GitService {
     const limit = request.limit ?? 100;
     const args = ['log', '--date=iso-strict', `--format=${LOG_FORMAT}`, '--topo-order', '--no-color', `--max-count=${limit + 1}`];
     if (request.skip) args.push(`--skip=${request.skip}`);
-    if (request.all) args.push('--all');
+    if (request.all) args.push('--all', '--exclude=refs/stash', '--exclude=refs/notes/*');
     if (request.search) args.push('--regexp-ignore-case', '--fixed-strings', `--grep=${request.search}`);
     const ref = request.ref ?? (request.all ? null : 'HEAD');
     if (ref) args.push(ref);
@@ -507,7 +512,9 @@ export class GitService {
     const log = await this.logger(ctx, ['-1', sha]);
     const commit = log[0];
     if (!commit) throw new GitError(ERR.notFound(`Commit not found: ${sha}`));
-    const diff = await this.diff({ repoPath: ctx.root, target: 'commit', commit: commit.sha });
+    const diff = commit.parents.length > 1 && commit.parents[0]
+      ? await this.diff({ repoPath: ctx.root, target: 'range', from: commit.parents[0], to: commit.sha })
+      : await this.diff({ repoPath: ctx.root, target: 'commit', commit: commit.sha });
     const files: DiffFileSummary[] = diff.files.map((file) => ({
       path: file.newPath,
       ...(file.status === 'renamed' ? { oldPath: file.oldPath } : {}),
@@ -861,7 +868,7 @@ export class GitService {
     const ctx = await this.context(repoPath);
     const result = await this.runner.run({
       cwd: ctx.root,
-      args: ['stash', 'list', '--format=%gd%1f%H%1f%h%1f%gs%1f%aI'],
+      args: ['stash', 'list', '--format=%gd%x1f%H%x1f%h%x1f%gs%x1f%aI'],
       timeoutMs: 30_000,
     });
     return parseStashes(result.stdout);
@@ -1180,21 +1187,27 @@ export class GitService {
   async checkIgnore(repoPath: string, filePath: string): Promise<{ path: string; ignored: boolean; source: string | null; pattern: string | null; line: number | null }> {
     const ctx = await this.context(repoPath);
     const safe = validateRelativePath(filePath);
-    const result = await this.runner.run({
+    const probe = await this.runner.run({
       cwd: ctx.root,
-      args: ['check-ignore', '-v', '--no-index', '-z', '--', safe],
+      args: ['check-ignore', '-q', '--no-index', '--', safe],
       timeoutMs: 30_000,
       allowNonZero: true,
     });
-    if (!result.stdout.trim()) return { path: safe, ignored: false, source: null, pattern: null, line: null };
-    const first = result.stdout.split('\0')[0] ?? '';
-    const match = /^(.*?):(\d+):(.*)$/.exec(first.split('\t')[0] ?? first);
+    if (probe.exitCode !== 0) return { path: safe, ignored: false, source: null, pattern: null, line: null };
+    const verbose = await this.runner.run({
+      cwd: ctx.root,
+      args: ['check-ignore', '-v', '--no-index', '-z', '--stdin'],
+      input: `${safe} `,
+      timeoutMs: 30_000,
+      allowNonZero: true,
+    });
+    const fields = verbose.stdout.split(' ');
     return {
       path: safe,
       ignored: true,
-      source: match?.[1] ?? null,
-      line: match?.[2] ? Number(match[2]) : null,
-      pattern: match?.[3] ?? null,
+      source: fields[0] || null,
+      line: fields[1] ? Number(fields[1]) : null,
+      pattern: fields[2] || null,
     };
   }
 

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  ArrowDownUp, ArrowUpRight, Calendar, ChevronDown, GitBranch, Cherry, GitCommitHorizontal, GitCompare,
+  ArrowDownUp, Calendar, ChevronDown, Cherry, GitCommitHorizontal, GitCompare,
   GitMerge, History, RotateCcw, Search, Sparkles, Tag, User, FileText, Loader2,
 } from 'lucide-react';
-import type { BranchComparison, BranchInfo, CommitDetails, CommitSummary, FileHistoryEntry, LogResult, TextFile } from '../../shared/types';
+import type { BranchComparison, BranchInfo, CommitDetails, FileHistoryEntry, LogResult, TextFile } from '../../shared/types';
 import { call, errorDetail, errorMessage } from '../lib/api';
 import { useApp } from '../state/AppState';
 import { cx, copyToClipboard } from '../lib/utils';
@@ -410,4 +410,3 @@ export function HistoryWorkspace(): React.JSX.Element {
   );
 }
 
-void ArrowUpRight; void GitBranch;
