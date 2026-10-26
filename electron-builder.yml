@@ -1,0 +1,48 @@
+appId: com.gitplusplus.app
+productName: Git++
+copyright: Copyright © 2026 Git++ Contributors
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+  - package.json
+  - build/icon.png
+
+asar: true
+compression: normal
+npmRebuild: false
+nodeGypRebuild: false
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.png
+  artifactName: GitPlusPlus-${version}-${arch}.${ext}
+  requestedExecutionLevel: asInvoker
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Git++
+  uninstallDisplayName: Git++
+  deleteAppDataOnUninstall: false
+
+linux:
+  target:
+    - dir
+  category: Development
+  icon: build/icon.png
+
+mac:
+  target:
+    - dir
+  category: public.app-category.developer-tools
+  icon: build/icon.png
